@@ -202,7 +202,7 @@ void FirmataClass::processInput(void)
       sysexBytesRead++;
     }
   } else if( (waitForData > 0) && (inputData < 128) ) {  
-    //FirmataSerial.print("passe");
+    Serial.print("passe");
     waitForData--;
     storedInputData[waitForData] = inputData;
     if( (waitForData==0) && executeMultiByteCommand ) { // got the whole message
@@ -222,22 +222,10 @@ void FirmataClass::processInput(void)
         }
         break;
       case SET_PIN_PROP:
-	//FirmataSerial.print("\npin : ");
-	//FirmataSerial.print(storedInputData[1]);
-	//FirmataSerial.print("\nmode : ");
-	//FirmataSerial.print(storedInputData[0]);
-	/*for (int i=0; i < 30; i++ ){
-	  // FirmataSerial.print( storedInputData[i+3]); 
-	}
-	FirmataSerial.print("\n");*/
 	byte name[29];
 	for (int i=0; i<28 ; i++){
-	  name[i] = storedInputData[28-i]; 
+	  name[i] = storedInputData[28-i];
 	}
-	//FirmataSerial.print("name = ");
-	//for (int i=0; i< 28; i++)
-	  //FirmataSerial.print(name[i]);
-	  //FirmataSerial.print("\n");
         if(currentPinPropCallback){
           (*currentPinPropCallback)(storedInputData[30], storedInputData[29], name);
 	}
@@ -250,6 +238,10 @@ void FirmataClass::processInput(void)
         if(currentReportDigitalCallback)
           (*currentReportDigitalCallback)(multiByteChannel,storedInputData[0]);
         break;
+	/*case EEPROM_WRITING:
+	if(currentEEPROMWritingCallback)
+          (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
+	  break;*/
       }
       executeMultiByteCommand = 0;
     }	
@@ -277,6 +269,10 @@ void FirmataClass::processInput(void)
       waitForData = 1; // two data bytes needed
       executeMultiByteCommand = command;
       break;
+      /*case EEPROM_WRITING :
+      waitForData = 1;
+      executeMultiByteCommand = command;
+      break;*/
     case START_SYSEX:
       parsingSysex = true;
       sysexBytesRead = 0;
@@ -396,6 +392,11 @@ void FirmataClass::attach(byte command, propCallbackFunction newFunction)
 {
   currentPinPropCallback = newFunction;
 }
+
+/*void FirmataClass::attach(byte command, EEPROMWritingCallbackFunction newFunction)
+{
+  currentEEPROMWritingCallback = newFunction;
+  }*/
 
 void FirmataClass::detach(byte command)
 {

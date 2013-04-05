@@ -64,6 +64,12 @@
 #define SYSEX_I2C_REPLY         0x77 // same as I2C_REPLY
 #define SYSEX_SAMPLING_INTERVAL 0x7A // same as SAMPLING_INTERVAL
 
+// add by Julie
+//#define EEPROM_WRITING          0x00
+#define SET_PIN_NAME            0x01 
+
+
+
 // pin modes
 //#define INPUT                 0x00 // defined in wiring.h
 //#define OUTPUT                0x01 // defined in wiring.h
@@ -81,6 +87,7 @@ extern "C" {
     typedef void (*systemResetCallbackFunction)(void);
     typedef void (*stringCallbackFunction)(char*);
     typedef void (*sysexCallbackFunction)(byte command, byte argc, byte*argv);
+  //typedef void (*EEPROMWritingCallbackFunction)();
 }
 
 
@@ -115,6 +122,7 @@ public:
     void attach(byte command, systemResetCallbackFunction newFunction);
     void attach(byte command, stringCallbackFunction newFunction);
     void attach(byte command, sysexCallbackFunction newFunction);
+    //void attach(byte command, EEPROMWritingCallback newFunction);
     void detach(byte command);
 
 private:
@@ -140,6 +148,7 @@ private:
     systemResetCallbackFunction currentSystemResetCallback;
     stringCallbackFunction currentStringCallback;
     sysexCallbackFunction currentSysexCallback;
+    //EEPROMWritingCallbackFunction currentEEPROMWritingCallback;
     
 
 /* private methods ------------------------------ */
