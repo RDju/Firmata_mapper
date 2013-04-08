@@ -201,8 +201,12 @@ void FirmataClass::processInput(void)
       storedInputData[sysexBytesRead] = inputData;
       sysexBytesRead++;
     }
-  } else if( (waitForData > 0) && (inputData < 128) ) {  
-    Serial.print("passe");
+  }/* else if (inputData == EEPROM_WRITING){
+    if(currentEEPROMWritingCallback){
+      (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
+    }
+    }*/
+ else if( (waitForData > 0) && (inputData < 128) ) {  
     waitForData--;
     storedInputData[waitForData] = inputData;
     if( (waitForData==0) && executeMultiByteCommand ) { // got the whole message
@@ -223,12 +227,10 @@ void FirmataClass::processInput(void)
         break;
       case SET_PIN_PROP:
 	byte name[29];
-	for (int i=0; i<28 ; i++){
+	for (int i=0; i<28 ; i++)
 	  name[i] = storedInputData[28-i];
-	}
-        if(currentPinPropCallback){
+        if(currentPinPropCallback)
           (*currentPinPropCallback)(storedInputData[30], storedInputData[29], name);
-	}
         break;
       case REPORT_ANALOG:
         if(currentReportAnalogCallback)
@@ -238,16 +240,17 @@ void FirmataClass::processInput(void)
         if(currentReportDigitalCallback)
           (*currentReportDigitalCallback)(multiByteChannel,storedInputData[0]);
         break;
-	/*case EEPROM_WRITING:
-	if(currentEEPROMWritingCallback)
+      case EEPROM_WRITING:
+	if(currentEEPROMWritingCallback){
           (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
-	  break;*/
+	}
+	  break;
       }
       executeMultiByteCommand = 0;
-    }	
+    }
   } else {
     // remove channel info from command byte if less than 0xF0
-    if(inputData < 0xF0) {
+    if(inputData < 0x07) {
       command = inputData & 0xF0;
       multiByteChannel = inputData & 0x0F;
     } else {
@@ -269,10 +272,10 @@ void FirmataClass::processInput(void)
       waitForData = 1; // two data bytes needed
       executeMultiByteCommand = command;
       break;
-      /*case EEPROM_WRITING :
-      waitForData = 1;
+    case EEPROM_WRITING :
+      waitForData = 2;
       executeMultiByteCommand = command;
-      break;*/
+      break;
     case START_SYSEX:
       parsingSysex = true;
       sysexBytesRead = 0;
@@ -360,12 +363,14 @@ void FirmataClass::sendString(const char* string)
 // generic callbacks
 void FirmataClass::attach(byte command, callbackFunction newFunction)
 {
+  Serial.print("attach");
   switch(command) {
   case ANALOG_MESSAGE: currentAnalogCallback = newFunction; break;
   case DIGITAL_MESSAGE: currentDigitalCallback = newFunction; break;
   case REPORT_ANALOG: currentReportAnalogCallback = newFunction; break;
   case REPORT_DIGITAL: currentReportDigitalCallback = newFunction; break;
     // case SET_PIN_MODE: currentPinModeCallback = newFunction; break;
+  case EEPROM_WRITING: currentEEPROMWritingCallback = newFunction; break;
   }
 }
 
@@ -396,7 +401,7 @@ void FirmataClass::attach(byte command, propCallbackFunction newFunction)
 /*void FirmataClass::attach(byte command, EEPROMWritingCallbackFunction newFunction)
 {
   currentEEPROMWritingCallback = newFunction;
-  }*/
+}*/
 
 void FirmataClass::detach(byte command)
 {

@@ -14,6 +14,9 @@
 #define Firmata_h
 
 #include "Boards.h"  /* Hardware Abstraction Layer + Wiring/Arduino */
+#include <iostream>
+
+using namespace std; 
 
 /* Version numbers for the protocol.  The protocol is still changing, so these
  * version numbers are important.  This number can be queried so that host
@@ -65,8 +68,8 @@
 #define SYSEX_SAMPLING_INTERVAL 0x7A // same as SAMPLING_INTERVAL
 
 // add by Julie
-//#define EEPROM_WRITING          0x00
-#define SET_PIN_NAME            0x01 
+#define EEPROM_WRITING          0x07
+#define SET_PIN_NAME            0x08 
 
 
 
@@ -87,7 +90,7 @@ extern "C" {
     typedef void (*systemResetCallbackFunction)(void);
     typedef void (*stringCallbackFunction)(char*);
     typedef void (*sysexCallbackFunction)(byte command, byte argc, byte*argv);
-  //typedef void (*EEPROMWritingCallbackFunction)();
+  // typedef void (*EEPROMWritingCallbackFunction)();
 }
 
 
@@ -122,7 +125,7 @@ public:
     void attach(byte command, systemResetCallbackFunction newFunction);
     void attach(byte command, stringCallbackFunction newFunction);
     void attach(byte command, sysexCallbackFunction newFunction);
-    //void attach(byte command, EEPROMWritingCallback newFunction);
+    //void attach(byte command, EEPROMWritingCallbackFunction newFunction);
     void detach(byte command);
 
 private:
@@ -148,7 +151,7 @@ private:
     systemResetCallbackFunction currentSystemResetCallback;
     stringCallbackFunction currentStringCallback;
     sysexCallbackFunction currentSysexCallback;
-    //EEPROMWritingCallbackFunction currentEEPROMWritingCallback;
+    callbackFunction currentEEPROMWritingCallback;
     
 
 /* private methods ------------------------------ */
