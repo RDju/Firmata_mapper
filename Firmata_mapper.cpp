@@ -273,8 +273,9 @@ void FirmataClass::processInput(void)
       executeMultiByteCommand = command;
       break;
     case EEPROM_WRITING :
-      waitForData = 2;
+      waitForData = 1;
       executeMultiByteCommand = command;
+      multiByteChannel = command;
       break;
     case START_SYSEX:
       parsingSysex = true;
@@ -340,7 +341,11 @@ void FirmataClass::sendSysex(byte command, byte bytec, byte* bytev)
   startSysex();
   FirmataSerial.write(command);
   for(i=0; i<bytec; i++) {
-    sendValueAsTwo7bitBytes(bytev[i]);        
+    sendValueAsTwo7bitBytes(bytev[i]);
+    //Serial.print(i);
+    //Serial.print(" : ");
+    //Serial.print(bytev[i]);
+    //Serial.print(", ");
   }
   endSysex();
 }
