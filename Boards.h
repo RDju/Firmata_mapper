@@ -148,6 +148,12 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         ((p) - 2)
 #define ARDUINO_PINOUT_OPTIMIZE 1
+#if defined(__AVR_ATmega168__) 
+#define EEPROM_SIZE             512
+#endif
+#if defined(__AVR_ATmega328P__)
+#define EEPROM_SIZE             1024
+#endif
 
 
 // Wiring (and board)
@@ -179,6 +185,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         ((p) - 2)
 #define ARDUINO_PINOUT_OPTIMIZE 1
+#define EEPROM_SIZE           512
 
 
 // Arduino Mega
@@ -195,6 +202,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_ANALOG(p)        ((p) - 54)
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         ((p) - 2)
+#define EEPROM_SIZE             4096
 
 
 // Teensy 1.0

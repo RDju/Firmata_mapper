@@ -226,11 +226,11 @@ void FirmataClass::processInput(void)
         }
         break;
       case SET_PIN_PROP:
-	byte name[29];
-	for (int i=0; i<28 ; i++)
-	  name[i] = storedInputData[28-i];
+	byte name[SIZE_MAX_NAME];
+	for (int i=0; i<SIZE_MAX_NAME ; i++)
+	  name[i] = storedInputData[ SIZE_MAX_NAME-1 -i];
         if(currentPinPropCallback)
-          (*currentPinPropCallback)(storedInputData[30], storedInputData[29], name);
+          (*currentPinPropCallback)(storedInputData[SIZE_MAX_NAME+1], storedInputData[SIZE_MAX_NAME], name);
         break;
       case REPORT_ANALOG:
         if(currentReportAnalogCallback)
@@ -241,9 +241,8 @@ void FirmataClass::processInput(void)
           (*currentReportDigitalCallback)(multiByteChannel,storedInputData[0]);
         break;
       case EEPROM_WRITING:
-	if(currentEEPROMWritingCallback){
+	if(currentEEPROMWritingCallback)
           (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
-	}
 	  break;
       }
       executeMultiByteCommand = 0;
@@ -264,7 +263,7 @@ void FirmataClass::processInput(void)
       executeMultiByteCommand = command;
       break;
     case SET_PIN_PROP:
-      waitForData = 31; //2;//35; // two data bytes needed
+      waitForData = SIZE_MAX_NAME+2;
       executeMultiByteCommand = command;
       break;
     case REPORT_ANALOG:
