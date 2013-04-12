@@ -171,14 +171,8 @@ void FirmataClass::processSysexMessage(void)
     }
     break;
   default:
-    if(currentSysexCallback){
-      /*FirmataSerial.print("name dans sysex : ");
-      for (int i = 0; i< 32; i++){
-	FirmataSerial.print(storedInputData[i]);
-	}*/
-	
+    if(currentSysexCallback)
       (*currentSysexCallback)(storedInputData[0], sysexBytesRead - 1, storedInputData + 1);
-    }
   }
 }
 
