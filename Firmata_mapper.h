@@ -70,7 +70,7 @@ using namespace std;
 // add by Julie
 #define EEPROM_WRITING          0x07
 #define SET_PIN_NAME            0x08 
-#define SIZE_MAX_NAME           5
+#define SIZE_MAX_NAME           10
 
 
 // pin modes
