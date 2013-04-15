@@ -219,12 +219,20 @@ void FirmataClass::processInput(void)
                                     + storedInputData[1]);
         }
         break;
-      case SET_PIN_PROP:
+      case SET_PIN_MODE:
+	/*byte name[SIZE_MAX_NAME];
+	for (int i=0; i<SIZE_MAX_NAME ; i++)
+	name[i] = storedInputData[ SIZE_MAX_NAME-1 -i];*/
+        if(currentPinModeCallback)
+	  (*currentPinModeCallback)(storedInputData[1], storedInputData[0]);
+          //(*currentPinModeCallback)(storedInputData[SIZE_MAX_NAME+1], storedInputData[SIZE_MAX_NAME], name);
+        break;
+      case SET_PIN_NAME:
 	byte name[SIZE_MAX_NAME];
 	for (int i=0; i<SIZE_MAX_NAME ; i++)
 	  name[i] = storedInputData[ SIZE_MAX_NAME-1 -i];
-        if(currentPinPropCallback)
-          (*currentPinPropCallback)(storedInputData[SIZE_MAX_NAME+1], storedInputData[SIZE_MAX_NAME], name);
+        if(currentPinNameCallback)
+          (*currentPinNameCallback)(storedInputData[SIZE_MAX_NAME], name);
         break;
       case REPORT_ANALOG:
         if(currentReportAnalogCallback)
@@ -256,8 +264,12 @@ void FirmataClass::processInput(void)
       waitForData = 2; // two data bytes needed
       executeMultiByteCommand = command;
       break;
-    case SET_PIN_PROP:
-      waitForData = SIZE_MAX_NAME+2;
+    case SET_PIN_MODE:
+      waitForData = /*SIZE_MAX_NAME+*/2;
+      executeMultiByteCommand = command;
+      break;
+    case SET_PIN_NAME:
+      waitForData = SIZE_MAX_NAME+1;
       executeMultiByteCommand = command;
       break;
     case REPORT_ANALOG:
@@ -363,7 +375,7 @@ void FirmataClass::attach(byte command, callbackFunction newFunction)
   case DIGITAL_MESSAGE: currentDigitalCallback = newFunction; break;
   case REPORT_ANALOG: currentReportAnalogCallback = newFunction; break;
   case REPORT_DIGITAL: currentReportDigitalCallback = newFunction; break;
-    // case SET_PIN_MODE: currentPinModeCallback = newFunction; break;
+  case SET_PIN_MODE: currentPinModeCallback = newFunction; break;
   case EEPROM_WRITING: currentEEPROMWritingCallback = newFunction; break;
   }
 }
@@ -387,9 +399,14 @@ void FirmataClass::attach(byte command, sysexCallbackFunction newFunction)
   currentSysexCallback = newFunction;
 }
 
-void FirmataClass::attach(byte command, propCallbackFunction newFunction)
+/*void FirmataClass::attach(byte command, modeCallbackFunction newFunction)
 {
-  currentPinPropCallback = newFunction;
+  currentPinModeCallback = newFunction;
+}*/
+
+void FirmataClass::attach(byte command, nameCallbackFunction newFunction)
+{
+  currentPinNameCallback = newFunction;
 }
 
 /*void FirmataClass::attach(byte command, EEPROMWritingCallbackFunction newFunction)

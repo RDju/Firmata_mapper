@@ -34,7 +34,7 @@ using namespace std;
 #define REPORT_ANALOG           0xC0 // enable analog input by pin #
 #define REPORT_DIGITAL          0xD0 // enable digital input by port pair
 //
-#define SET_PIN_PROP            0xF4 // set a pin to INPUT/OUTPUT/PWM/etc
+#define SET_PIN_MODE            0xF4 // set a pin to INPUT/OUTPUT/PWM/etc
 //
 #define REPORT_VERSION          0xF9 // report protocol version
 #define SYSTEM_RESET            0xFF // reset from MIDI
@@ -69,8 +69,14 @@ using namespace std;
 
 // add by Julie
 #define EEPROM_WRITING          0x07
-#define SET_PIN_NAME            0x08 
-#define SIZE_MAX_NAME           10
+#define SET_PIN_NAME            0x08
+/*#if defined (__AVR_ATmega168__) || defines(__AVR_ATmega8__) 
+#define SIZE_MAX_NAME           16
+#else
+#define SIZE_MAX_NAME           20
+#endif*/
+#define SIZE_MAX_NAME           12
+#define SIZE_MAX_UNIT           5
 
 
 // pin modes
@@ -86,7 +92,8 @@ using namespace std;
 extern "C" {
 // callback function types
     typedef void (*callbackFunction)(byte, int);
-    typedef void (*propCallbackFunction)(byte, int, byte*);
+    typedef void (*modeCallbackFunction)(byte, int/*, byte**/);
+    typedef void (*nameCallbackFunction) (byte, byte*);
     typedef void (*systemResetCallbackFunction)(void);
     typedef void (*stringCallbackFunction)(char*);
     typedef void (*sysexCallbackFunction)(byte command, byte argc, byte*argv);
@@ -121,10 +128,11 @@ public:
 	void sendSysex(byte command, byte bytec, byte* bytev);
 /* attach & detach callback functions to messages */
     void attach(byte command, callbackFunction newFunction);
-    void attach(byte command, propCallbackFunction newFunction);
+    //void attach(byte command, modeCallbackFunction newFunction);
     void attach(byte command, systemResetCallbackFunction newFunction);
     void attach(byte command, stringCallbackFunction newFunction);
     void attach(byte command, sysexCallbackFunction newFunction);
+    void attach(byte command, nameCallbackFunction newFunction);
     //void attach(byte command, EEPROMWritingCallbackFunction newFunction);
     void detach(byte command);
 
@@ -146,12 +154,14 @@ private:
     callbackFunction currentDigitalCallback;
     callbackFunction currentReportAnalogCallback;
     callbackFunction currentReportDigitalCallback;
-    //callbackFunction currentPinModeCallback;
-    propCallbackFunction currentPinPropCallback;
+    callbackFunction currentPinModeCallback;
+    //modeCallbackFunction currentPinModeCallback;
+    nameCallbackFunction currentPinNameCallback;
     systemResetCallbackFunction currentSystemResetCallback;
     stringCallbackFunction currentStringCallback;
     sysexCallbackFunction currentSysexCallback;
     callbackFunction currentEEPROMWritingCallback;
+    
     
 
 /* private methods ------------------------------ */
