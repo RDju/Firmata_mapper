@@ -68,7 +68,7 @@ using namespace std;
 #define SYSEX_SAMPLING_INTERVAL 0x7A // same as SAMPLING_INTERVAL
 
 // add by Julie
-#define EEPROM_WRITING          0x07
+#define EEPROM_WRITING          0x09
 #define SET_PIN_NAME            0x08
 /*#if defined (__AVR_ATmega168__) || defines(__AVR_ATmega8__) 
 #define SIZE_MAX_NAME           16

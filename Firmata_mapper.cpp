@@ -79,6 +79,7 @@ void FirmataClass::begin(Stream &s)
   systemReset();
   printVersion();
   printFirmwareVersion();
+  Serial.print("begin");
 }
 
 // output the protocol version message to the serial port
@@ -195,11 +196,7 @@ void FirmataClass::processInput(void)
       storedInputData[sysexBytesRead] = inputData;
       sysexBytesRead++;
     }
-  }/* else if (inputData == EEPROM_WRITING){
-    if(currentEEPROMWritingCallback){
-      (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
-    }
-    }*/
+  }
  else if( (waitForData > 0) && (inputData < 128) ) {  
     waitForData--;
     storedInputData[waitForData] = inputData;
@@ -220,12 +217,8 @@ void FirmataClass::processInput(void)
         }
         break;
       case SET_PIN_MODE:
-	/*byte name[SIZE_MAX_NAME];
-	for (int i=0; i<SIZE_MAX_NAME ; i++)
-	name[i] = storedInputData[ SIZE_MAX_NAME-1 -i];*/
         if(currentPinModeCallback)
 	  (*currentPinModeCallback)(storedInputData[1], storedInputData[0]);
-          //(*currentPinModeCallback)(storedInputData[SIZE_MAX_NAME+1], storedInputData[SIZE_MAX_NAME], name);
         break;
       case SET_PIN_NAME:
 	byte name[SIZE_MAX_NAME];
@@ -245,19 +238,19 @@ void FirmataClass::processInput(void)
       case EEPROM_WRITING:
 	if(currentEEPROMWritingCallback)
           (*currentEEPROMWritingCallback)(multiByteChannel,storedInputData[0]);
-	  break;
+	break;
       }
       executeMultiByteCommand = 0;
     }
-  } else {
-    // remove channel info from command byte if less than 0xF0
-    if(inputData < 0x07) {
-      command = inputData & 0xF0;
-      multiByteChannel = inputData & 0x0F;
-    } else {
-      command = inputData;
-      // commands in the 0xF* range don't use channel data
-    }
+ } else {
+   // remove channel info from command byte if less than 0xF0
+   if(inputData < 0xF0 && (inputData!=0x08 && inputData!=0x09)){
+     command = inputData & 0xF0;
+     multiByteChannel = inputData & 0x0F;
+   } else {
+     command = inputData;
+     // commands in the 0xF* range don't use channel data
+   }
     switch (command) {
     case ANALOG_MESSAGE:
     case DIGITAL_MESSAGE:
@@ -399,20 +392,10 @@ void FirmataClass::attach(byte command, sysexCallbackFunction newFunction)
   currentSysexCallback = newFunction;
 }
 
-/*void FirmataClass::attach(byte command, modeCallbackFunction newFunction)
-{
-  currentPinModeCallback = newFunction;
-}*/
-
 void FirmataClass::attach(byte command, nameCallbackFunction newFunction)
 {
   currentPinNameCallback = newFunction;
 }
-
-/*void FirmataClass::attach(byte command, EEPROMWritingCallbackFunction newFunction)
-{
-  currentEEPROMWritingCallback = newFunction;
-}*/
 
 void FirmataClass::detach(byte command)
 {
