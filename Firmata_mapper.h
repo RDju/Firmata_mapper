@@ -47,7 +47,7 @@ using namespace std;
 #define SERVO_CONFIG            0x70 // set max angle, minPulse, maxPulse, freq
 #define STRING_DATA             0x71 // a string message with 14-bits per char
 #define SHIFT_DATA              0x75 // a bitstream to/from a shift register
-#define I2C_REQUEST             0x76 // send an I2C read/write request
+//#define I2C_REQUEST             0x76 // send an I2C read/write request
 #define I2C_REPLY               0x77 // a reply to an I2C read request
 #define I2C_CONFIG              0x78 // config I2C settings such as delay times and power pins
 #define EXTENDED_ANALOG         0x6F // analog write (PWM, Servo, etc) to any pin
@@ -70,6 +70,8 @@ using namespace std;
 // add by Julie
 #define EEPROM_WRITING          0x09
 #define SET_PIN_NAME            0x08
+#define SET_PIN_UNIT            0x07
+#define EEPROM_LOADING          0x71
 /*#if defined (__AVR_ATmega168__) || defines(__AVR_ATmega8__) 
 #define SIZE_MAX_NAME           16
 #else
