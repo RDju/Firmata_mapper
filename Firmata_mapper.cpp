@@ -79,7 +79,6 @@ void FirmataClass::begin(Stream &s)
   systemReset();
   printVersion();
   printFirmwareVersion();
-  Serial.print("begin");
 }
 
 // output the protocol version message to the serial port
@@ -181,10 +180,16 @@ void FirmataClass::processInput(void)
 {
   int inputData = FirmataSerial.read(); // this is 'int' to handle -1 when no data
   int command;
+  //Serial.print("\n");
+  //Serial.print("ok1");
+  //Serial.print("\n");
     
   // TODO make sure it handles -1 properly
 
   if (parsingSysex) {
+    //Serial.print("\n");
+    //Serial.print("ok1");
+    //Serial.print("\n");
 
     if(inputData == END_SYSEX) {
       //stop sysex byte      
@@ -221,11 +226,12 @@ void FirmataClass::processInput(void)
 	  (*currentPinModeCallback)(storedInputData[1], storedInputData[0]);
         break;
       case SET_PIN_NAME:
-	byte name[SIZE_MAX_NAME];
-	for (int i=0; i<SIZE_MAX_NAME ; i++)
-	  name[i] = storedInputData[ SIZE_MAX_NAME-1 -i];
+	byte name[SIZE_MAX_NAME+SIZE_MAX_UNIT];
+	for (int i=0; i<SIZE_MAX_NAME+SIZE_MAX_UNIT ; i++)
+	  name[i] = storedInputData[ SIZE_MAX_NAME+SIZE_MAX_UNIT-1 -i];
+
         if(currentPinNameCallback)
-          (*currentPinNameCallback)(storedInputData[SIZE_MAX_NAME], name);
+          (*currentPinNameCallback)(storedInputData[SIZE_MAX_NAME+SIZE_MAX_UNIT], name);
         break;
       case REPORT_ANALOG:
         if(currentReportAnalogCallback)
@@ -243,12 +249,18 @@ void FirmataClass::processInput(void)
       executeMultiByteCommand = 0;
     }
  } else {
+   //Serial.print("\n");
+   //Serial.print("ok2");
+   //Serial.print("\n");
    // remove channel info from command byte if less than 0xF0
    if(inputData < 0xF0 && (inputData!=0x08 && inputData!=0x09)){
      command = inputData & 0xF0;
      multiByteChannel = inputData & 0x0F;
    } else {
      command = inputData;
+     //Serial.print("command : ");
+     //Serial.print(command);
+     //Serial.print("\n ");
      // commands in the 0xF* range don't use channel data
    }
     switch (command) {
@@ -262,7 +274,7 @@ void FirmataClass::processInput(void)
       executeMultiByteCommand = command;
       break;
     case SET_PIN_NAME:
-      waitForData = SIZE_MAX_NAME+1;
+      waitForData = SIZE_MAX_NAME + SIZE_MAX_UNIT + 1;
       executeMultiByteCommand = command;
       break;
     case REPORT_ANALOG:
@@ -271,6 +283,7 @@ void FirmataClass::processInput(void)
       executeMultiByteCommand = command;
       break;
     case EEPROM_WRITING :
+      //  Serial.print("switch process eeprom");
       waitForData = 1;
       executeMultiByteCommand = command;
       multiByteChannel = command;
@@ -362,7 +375,6 @@ void FirmataClass::sendString(const char* string)
 // generic callbacks
 void FirmataClass::attach(byte command, callbackFunction newFunction)
 {
-  Serial.print("attach");
   switch(command) {
   case ANALOG_MESSAGE: currentAnalogCallback = newFunction; break;
   case DIGITAL_MESSAGE: currentDigitalCallback = newFunction; break;
