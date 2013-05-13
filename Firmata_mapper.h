@@ -71,7 +71,7 @@ using namespace std;
 #define EEPROM_WRITING          0x09
 #define SET_PIN_NAME            0x08
 #define SET_PIN_UNIT            0x07
-#define EEPROM_LOADING          0x71
+#define EEPROM_LOADING          0x0B
 /*#if defined (__AVR_ATmega168__) || defines(__AVR_ATmega8__) 
 #define SIZE_MAX_NAME           16
 #else
@@ -88,8 +88,8 @@ using namespace std;
 #define PWM                     0x03 // digital pin in PWM output mode
 #define SERVO                   0x04 // digital pin in Servo output mode
 #define SHIFT                   0x05 // shiftIn/shiftOut mode
-#define I2C                     0x06 // pin included in I2C setup
-#define TOTAL_PIN_MODES         7
+//#define I2C                     0x06 // pin included in I2C setup
+#define TOTAL_PIN_MODES         6
 
 extern "C" {
 // callback function types
