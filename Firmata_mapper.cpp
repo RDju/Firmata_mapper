@@ -370,6 +370,18 @@ void FirmataClass::sendString(const char* string)
 }
 
 
+void FirmataClass::sendPinName(int pin, char* name)
+{
+  //char* stringToSend = strcat((char*)pin, name);
+  //sendString(SEND_NAME, stringToSend);
+
+  Serial.write(SEND_NAME);
+  Serial.write(pin);
+  for (int i = 0; i < SIZE_MAX_NAME ; i++)
+    Serial.write( name[i]);
+  
+}
+
 // Internal Actions/////////////////////////////////////////////////////////////
 
 // generic callbacks

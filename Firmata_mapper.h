@@ -72,6 +72,7 @@ using namespace std;
 #define SET_PIN_NAME            0x08
 #define SET_PIN_UNIT            0x07
 #define EEPROM_LOADING          0x0B
+#define SEND_NAME               0x08
 /*#if defined (__AVR_ATmega168__) || defines(__AVR_ATmega8__) 
 #define SIZE_MAX_NAME           16
 #else
@@ -128,6 +129,7 @@ public:
     void sendString(const char* string);
     void sendString(byte command, const char* string);
 	void sendSysex(byte command, byte bytec, byte* bytev);
+	void sendPinName(int pin, char* name);
 /* attach & detach callback functions to messages */
     void attach(byte command, callbackFunction newFunction);
     //void attach(byte command, modeCallbackFunction newFunction);
