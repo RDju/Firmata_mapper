@@ -21,6 +21,7 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
+#include <SPI.h>
 }
 
 //******************************************************************************
@@ -377,9 +378,27 @@ void FirmataClass::sendPinName(int pin, char* name)
 
   Serial.write(SEND_NAME);
   Serial.write(pin);
-  for (int i = 0; i < SIZE_MAX_NAME ; i++)
-    Serial.write( name[i]);
+  if (strlen(name) > SIZE_MAX_NAME){
+    
+    for (int i = 0; i < SIZE_MAX_NAME ; i++){
+      Serial.write( name[i]);
+    }
+  }else{
+    for (int i = 0; i < strlen(name) ; i++){
+      Serial.write( name[i]);
+    }
+    for (int i = strlen(name); i<SIZE_MAX_NAME; i++){
+      Serial.write( 0x20);
+    }
+  }
+}
+
+int FirmataClass::SPItransfer(int SSpin, int data){
   
+  digitalWrite(SSpin,LOW);
+  int value = SPI.transfer(data);
+  digitalWrite(SSpin,HIGH); 
+  return value;
 }
 
 // Internal Actions/////////////////////////////////////////////////////////////
